@@ -39,13 +39,44 @@ public class OrdIndex implements DBIndex {
 	@Override
 	public List<Integer> lookup(int key) {
 		// binary search of entries arraylist
-		// return list of block numbers (no duplicates). 
+		if(size == 0 || key < entries.get(0).key){return null;}
+		if(key > entries.get(size-1).key){return null;}
+		int lo = 0;
+		int hi = size-1;
+		if(key==entries.get(lo).key){hi = lo;}
+		if(key==entries.get(hi).key){lo = hi;}
+		while(hi-lo > 1){
+			int mid = (lo+hi)/2;
+			if(key==entries.get(mid).key){
+				lo = hi = mid;
+			} else if(key<entries.get(mid).key){
+				hi = mid;
+			} else {
+				lo = mid;
+			}
+		}
 		// if key not found, return empty list
-		throw new UnsupportedOperationException();
+		if(key!=entries.get(lo).key){return new ArrayList<>();}
+		// return list of block numbers (no duplicates).
+		ArrayList<Integer> temp = new ArrayList<Integer>();
+		for(BlockCount block: entries.get(lo).blocks){
+			temp.add(block.blockNo);
+		}
+		return temp;
+		//throw new UnsupportedOperationException();
 	}
 	
 	@Override
 	public void insert(int key, int blockNum) {
+		if(size==0){
+			Entry temp = new Entry();
+			BlockCount b = new BlockCount();
+			b.blockNo = blockNum;
+			b.count = 1;
+			temp.key = key;
+			temp.blocks.add(b);
+			entries.add(temp);
+		}
 		throw new UnsupportedOperationException();
 	}
 
