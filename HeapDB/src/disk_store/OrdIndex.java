@@ -19,11 +19,25 @@ public class OrdIndex implements DBIndex {
 	private class Entry {
 		int key;
 		ArrayList<BlockCount> blocks;
+
+		@Override
+		public String toString(){
+			String blockString = "";
+			for(BlockCount b: blocks){
+				blockString += b + " , ";
+			}
+			return String.format("Key: %d, %s", key, blockString);
+		}
 	}
 	
 	private class BlockCount {
 		int blockNo;
 		int count;
+
+		@Override
+		public String toString(){
+			return String.format("block num: %d, count: %d", blockNo, count);
+		}
 	}
 	
 	ArrayList<Entry> entries;
@@ -74,10 +88,73 @@ public class OrdIndex implements DBIndex {
 			b.blockNo = blockNum;
 			b.count = 1;
 			temp.key = key;
+			temp.blocks = new ArrayList<>();
 			temp.blocks.add(b);
 			entries.add(temp);
+			size++;
+			return;
 		}
-		throw new UnsupportedOperationException();
+		int idx = -1;
+		boolean exists = false;
+		System.out.printf("Inserting key: %d, index 0: %d, index end: %d%n",key, entries.get(0).key, entries.get(size-1).key);
+		if(key > entries.get(0).key || key <= entries.get(size-1).key){
+			System.out.println("In loop");
+			int lo = 0;
+			int hi = size-1;
+			if(key==entries.get(lo).key){
+				hi = lo;
+				exists = true;
+			}
+			if(key==entries.get(hi).key){
+				lo = hi;
+				exists = true;
+			}
+			while(hi-lo > 1){
+				int mid = (lo+hi)/2;
+				if(key==entries.get(mid).key){
+					lo = hi = mid;
+					exists = true;
+				} else if(key<entries.get(mid).key){
+					hi = mid;
+				} else {
+					lo = mid;
+				}
+			}
+			idx = lo;
+		}
+
+		if(exists){
+			Entry temp = entries.remove(idx);
+			boolean blockUsed = false;
+			for(BlockCount b: temp.blocks){
+				if(b.blockNo == blockNum){
+					blockUsed = true;
+					b.count++;
+				}
+			}
+			if(!blockUsed){
+				BlockCount b = new BlockCount();
+				b.count = 1;
+				b.blockNo = blockNum;
+				temp.blocks.add(b);
+			}
+			entries.add(idx, temp);
+		}else{
+			Entry temp = new Entry();
+			BlockCount b = new BlockCount();
+			b.blockNo = blockNum;
+			b.count = 1;
+			temp.key = key;
+			temp.blocks = new ArrayList<>();
+			temp.blocks.add(b);
+			System.out.println("adding temp: " + temp.toString() + "idx: " + idx);
+			if(idx == -1 && key > entries.get(size-1).key){entries.add(size, temp);}
+			else if(idx == -1){entries.add(0, temp);}
+			else{entries.add(idx,temp);}
+			size++;
+		}
+
+//		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -102,6 +179,11 @@ public class OrdIndex implements DBIndex {
 	
 	@Override
 	public String toString() {
-		throw new UnsupportedOperationException();
+		String temp = "Final Index: \n";
+		for(int i = 0; i < entries.size(); i++){
+			temp += String.format("index: %d - key: %d; size: %d%n", i, entries.get(i).key, entries.get(i).blocks.size());
+		}
+		return temp;
+//		throw new UnsupportedOperationException();
 	}
 }
