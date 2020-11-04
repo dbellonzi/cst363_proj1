@@ -1,7 +1,6 @@
 package disk_store;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * An ordered index.  Duplicate search key values are allowed,
@@ -53,8 +52,8 @@ public class OrdIndex implements DBIndex {
 	@Override
 	public List<Integer> lookup(int key) {
 		// binary search of entries arraylist
-		if(size == 0 || key < entries.get(0).key){return null;}
-		if(key > entries.get(size-1).key){return null;}
+		if(size == 0 || key < entries.get(0).key){return new ArrayList<>();}
+		if(key > entries.get(size-1).key){return new ArrayList<>();}
 		int lo = 0;
 		int hi = size-1;
 		if(key==entries.get(lo).key){hi = lo;}
@@ -159,12 +158,37 @@ public class OrdIndex implements DBIndex {
 
 	@Override
 	public void delete(int key, int blockNum) {
-		// lookup key 
-		//  if key not found, should not occur.  Ignore it.
-		//  decrement count for blockNum.
-		//  if count is now 0, remove the blockNum.
-		//  if there are no block number for this key, remove the key entry.
-		throw new UnsupportedOperationException();
+		// lookup key
+		List<Integer> item = lookup(key);
+		// if key not found or blockNum doesn't exist, should not occure. Ignore it.
+		if (item.contains(blockNum)) {
+			Iterator<Entry> e = entries.iterator();
+			while (e.hasNext()) {
+				Entry entry = e.next();
+				if (entry.key == key) {
+					//  decrement count for blockNum.
+					List<BlockCount> blocks = entry.blocks;
+					Iterator<BlockCount> b = blocks.iterator();
+					while(b.hasNext()) {
+						BlockCount block = b.next();
+						if (block.blockNo == blockNum) {
+							block.count -= 1;
+						}
+						//  if count is now 0, remove the blockNum.
+						if (block.count == 0) {
+							b.remove();
+						}
+					}
+					//  if there are no block number for this key, remove the key entry.
+					if(blocks.size() == 0) {
+						e.remove();
+					}
+					return;
+				}
+			}
+		}
+		
+//		throw new UnsupportedOperationException();
 	}
 	
 	/**
