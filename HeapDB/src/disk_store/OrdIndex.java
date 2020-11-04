@@ -53,9 +53,9 @@ public class OrdIndex implements DBIndex {
 	public List<Integer> lookup(int key) {
 		// binary search of entries arraylist
 		if(size == 0 || key < entries.get(0).key){return new ArrayList<>();}
-		if(key > entries.get(size-1).key){return new ArrayList<>();}
+		if(key > entries.get(entries.size()-1).key){return new ArrayList<>();}
 		int lo = 0;
-		int hi = size-1;
+		int hi = entries.size()-1;
 		if(key==entries.get(lo).key){hi = lo;}
 		if(key==entries.get(hi).key){lo = hi;}
 		while(hi-lo > 1){
@@ -97,10 +97,10 @@ public class OrdIndex implements DBIndex {
 		int idx = -1;
 		boolean exists = false;
 //		System.out.printf("Inserting key: %d, index 0: %d, index end: %d%n",key, entries.get(0).key, entries.get(size-1).key);
-		if(key >= entries.get(0).key && key <= entries.get(size-1).key){
+		if(key >= entries.get(0).key && key <= entries.get(entries.size()-1).key){
 //			System.out.println("In loop");
 			int lo = 0;
-			int hi = size-1;
+			int hi = entries.size()-1;
 			if(key==entries.get(lo).key){
 				hi = lo;
 				exists = true;
@@ -140,6 +140,7 @@ public class OrdIndex implements DBIndex {
 				temp.blocks.add(b);
 			}
 			entries.add(idx, temp);
+			size++;
 		}else{
 			Entry temp = new Entry();
 			BlockCount b = new BlockCount();
@@ -149,7 +150,7 @@ public class OrdIndex implements DBIndex {
 			temp.blocks = new ArrayList<>();
 			temp.blocks.add(b);
 //			System.out.println("adding temp: " + temp.toString() + "idx: " + idx);
-			if(idx == -1 && key > entries.get(size-1).key){entries.add(size, temp);}
+			if(idx == -1 && key > entries.get(entries.size()-1).key){entries.add(entries.size(), temp);}
 			else if(idx == -1){entries.add(0, temp);}
 			else{entries.add(idx,temp);}
 			size++;
@@ -164,6 +165,7 @@ public class OrdIndex implements DBIndex {
 		List<Integer> item = lookup(key);
 		// if key not found or blockNum doesn't exist, should not occure. Ignore it.
 		if (item.contains(blockNum)) {
+			size--;
 			Iterator<Entry> e = entries.iterator();
 			while (e.hasNext()) {
 				Entry entry = e.next();
