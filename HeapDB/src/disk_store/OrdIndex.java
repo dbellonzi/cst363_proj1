@@ -53,8 +53,8 @@ public class OrdIndex implements DBIndex {
 	@Override
 	public List<Integer> lookup(int key) {
 		// binary search of entries arraylist
-		if(size == 0 || key < entries.get(0).key){return null;}
-		if(key > entries.get(size-1).key){return null;}
+		if(size == 0 || key < entries.get(0).key){return new ArrayList<>();}
+		if(key > entries.get(size-1).key){return new ArrayList<>();}
 		int lo = 0;
 		int hi = size-1;
 		if(key==entries.get(lo).key){hi = lo;}
@@ -82,6 +82,7 @@ public class OrdIndex implements DBIndex {
 	
 	@Override
 	public void insert(int key, int blockNum) {
+		// Case 1 insert into empty list
 		if(size==0){
 			Entry temp = new Entry();
 			BlockCount b = new BlockCount();
@@ -96,9 +97,9 @@ public class OrdIndex implements DBIndex {
 		}
 		int idx = -1;
 		boolean exists = false;
-		System.out.printf("Inserting key: %d, index 0: %d, index end: %d%n",key, entries.get(0).key, entries.get(size-1).key);
-		if(key > entries.get(0).key || key <= entries.get(size-1).key){
-			System.out.println("In loop");
+//		System.out.printf("Inserting key: %d, index 0: %d, index end: %d%n",key, entries.get(0).key, entries.get(size-1).key);
+		if(key >= entries.get(0).key && key <= entries.get(size-1).key){
+//			System.out.println("In loop");
 			int lo = 0;
 			int hi = size-1;
 			if(key==entries.get(lo).key){
@@ -122,6 +123,7 @@ public class OrdIndex implements DBIndex {
 			}
 			idx = lo;
 		}
+//		System.out.println(key + " "+idx + " " + exists);
 
 		if(exists){
 			Entry temp = entries.remove(idx);
@@ -147,7 +149,7 @@ public class OrdIndex implements DBIndex {
 			temp.key = key;
 			temp.blocks = new ArrayList<>();
 			temp.blocks.add(b);
-			System.out.println("adding temp: " + temp.toString() + "idx: " + idx);
+//			System.out.println("adding temp: " + temp.toString() + "idx: " + idx);
 			if(idx == -1 && key > entries.get(size-1).key){entries.add(size, temp);}
 			else if(idx == -1){entries.add(0, temp);}
 			else{entries.add(idx,temp);}
@@ -159,7 +161,7 @@ public class OrdIndex implements DBIndex {
 
 	@Override
 	public void delete(int key, int blockNum) {
-		// lookup key 
+		// lookup key
 		//  if key not found, should not occur.  Ignore it.
 		//  decrement count for blockNum.
 		//  if count is now 0, remove the blockNum.
