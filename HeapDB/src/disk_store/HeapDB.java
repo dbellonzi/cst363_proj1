@@ -276,8 +276,6 @@ public class HeapDB implements DB, Iterable<Record> {
 							if (indexes[i]!=null) {
 								// maintain index[i],
 								indexes[i].delete( ((IntField) rec.get(i)).getValue(), blockNum );
-
-								// indexes[i].delete(<<column value>>, blockNum );
 							}
 						}
 
@@ -319,18 +317,24 @@ public class HeapDB implements DB, Iterable<Record> {
 					// no index on this column.  do linear scan
 					// add all records into "result"
 					for (Record rec : this) {
-						// ...
+						if(((IntField) rec.get(fieldNum)).getValue()==key)result.add(rec);
 				    }
 					
 				} else {
 					// do index lookup
+					List<Integer> temp = indexes[fieldNum].lookup(key);
 					// returns a list of block numbers
-					// call lookupInBlock to get the actual records 
+					// call lookupInBlock to get the actual records
+					for(int block: temp){
+						result.addAll(lookupInBlock(fieldNum,key,block));
+					}
 					// add records into "result'
 				}
 
+				return result;
+
 		// replace the following line with your return statement
-		throw new UnsupportedOperationException();
+		//throw new UnsupportedOperationException();
 	}
 
 	// Perform a linear search in the block with the given blockNum
@@ -418,13 +422,30 @@ public class HeapDB implements DB, Iterable<Record> {
 		// YOUR CODE HERE
 		// for each record in the DB, you will need to insert its
 		// index column value and the block number
+		// index column value and the block number
+		Record rec = schema.blankRecord();
+
+		// read and print the block bitmap
+		bf.read(bitmapBlock, blockmapBuffer);
+
+		for (int blockNum = bitmapBlock + 1; blockNum <= bf.getLastBlockIndex(); blockNum++) {
+			bf.read(blockNum, buffer);
+			for (int recNum = 0; recNum < recMap.size(); recNum++) {
+				if (recMap.getBit(recNum)) {
+					// record j is present; check its key value
+					int loc = recordLocation(recNum);
+					rec.deserialize(buffer.buffer, loc);
+					index.insert( ((IntField) rec.get(fieldNum)).getValue(), blockNum );
+				}
+			}
+		}
 		
-		// HINT:  see method diagnosticPrint for example of how to 
+		// HINT:  see method toStringDiagnostic() for example of how to
 		// iterate of all data blocks in table and all rows
 		// in each block
 		
 	
-		throw new UnsupportedOperationException();
+//		throw new UnsupportedOperationException();
 	}
 
 	/**
