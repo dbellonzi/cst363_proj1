@@ -72,6 +72,7 @@ class OrdIndexTest {
 		idx.insert(2, 1);
 		List<Integer> result = idx.lookup(2);
 		List<Integer> expected = Arrays.asList(1,2,3);
+		System.out.println(result.size());
 		assertTrue(result.size() == 3 && result.containsAll(expected));
 		
 		idx.delete(2, 1);
