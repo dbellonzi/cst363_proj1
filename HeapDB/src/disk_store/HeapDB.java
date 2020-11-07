@@ -217,12 +217,9 @@ public class HeapDB implements DB, Iterable<Record> {
 					bf.write(bitmapBlock, blockmapBuffer);
 				}
 				// index maintenance
-				// YOUR CODE HERE
-				
 				for (int i=0; i< indexes.length; i++) {
 					if (indexes[i]!=null) {
-						// maintain index[i], 
-
+						// maintain index[i],
 						indexes[i].insert( ((IntField) rec.get(i)).getValue(), blockNum );
 					}
 				}
@@ -271,7 +268,6 @@ public class HeapDB implements DB, Iterable<Record> {
 							bf.write(bitmapBlock, blockmapBuffer);
 						}
 							// index maintenance
-							// YOUR CODE HERE
 						for (int i=0; i< indexes.length; i++) {
 							if (indexes[i]!=null) {
 								// maintain index[i],
@@ -312,7 +308,6 @@ public class HeapDB implements DB, Iterable<Record> {
 
 		List<Record> result = new ArrayList<Record>();
 
-		// YOUR CODE HERE
 				if (indexes[fieldNum]==null) { 
 					// no index on this column.  do linear scan
 					// add all records into "result"
@@ -418,7 +413,6 @@ public class HeapDB implements DB, Iterable<Record> {
 			throw new IllegalArgumentException("index is null");
 		}
 
-		// YOUR CODE HERE
 		// for each record in the DB, you will need to insert its
 		// index column value and the block number
 		Record rec = schema.blankRecord();
