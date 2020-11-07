@@ -270,7 +270,7 @@ class HeapDBTest {
 			int op = randomOp(); 
 			if (op == 0) {
 				// insert
-				// System.out.println("insert "+key);
+//				 System.out.println("insert "+key);
 				rec = createTestRecord(key, 1, key);
 				boolean result = db.insert(rec);
 				// result should be false iff key was present before insert
@@ -279,7 +279,7 @@ class HeapDBTest {
 				keyPresent[key] = true;
 			} else if (op == 1) {
 				// delete
-				// System.out.println("delete "+key);
+//				 System.out.println("delete "+key);
 				boolean result = db.delete(key);
 				// result should be true iff key was present before insert
 				assertFalse(keyPresent[key] && !result);    // delete on existing record returned false
@@ -287,7 +287,7 @@ class HeapDBTest {
 				keyPresent[key] = false;
 			} else {
 				// lookup
-				// System.out.println("lookup "+key);
+//				 System.out.println("lookup "+key);
 				rec = db.lookup(key);
 				// result should be null iff the key is not present
 				assertFalse((rec == null) && keyPresent[key]);         // lookup on existing record returned null

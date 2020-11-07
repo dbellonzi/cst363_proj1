@@ -81,24 +81,9 @@ public class OrdIndex implements DBIndex {
 	
 	@Override
 	public void insert(int key, int blockNum) {
-		// Case 1 insert into empty list
-		if(size==0){
-			Entry temp = new Entry();
-			BlockCount b = new BlockCount();
-			b.blockNo = blockNum;
-			b.count = 1;
-			temp.key = key;
-			temp.blocks = new ArrayList<>();
-			temp.blocks.add(b);
-			entries.add(temp);
-			size++;
-			return;
-		}
 		int idx = -1;
 		boolean exists = false;
-//		System.out.printf("Inserting key: %d, index 0: %d, index end: %d%n",key, entries.get(0).key, entries.get(size-1).key);
-		if(key >= entries.get(0).key && key <= entries.get(entries.size()-1).key){
-//			System.out.println("In loop");
+		if(size!=0 && key >= entries.get(0).key && key <= entries.get(entries.size()-1).key){
 			int lo = 0;
 			int hi = entries.size()-1;
 			if(key==entries.get(lo).key){
@@ -112,7 +97,8 @@ public class OrdIndex implements DBIndex {
 			while(hi-lo > 1){
 				int mid = (lo+hi)/2;
 				if(key==entries.get(mid).key){
-					lo = hi = mid;
+					lo = mid;
+					hi = mid;
 					exists = true;
 				} else if(key<entries.get(mid).key){
 					hi = mid;
@@ -122,8 +108,6 @@ public class OrdIndex implements DBIndex {
 			}
 			idx = lo;
 		}
-//		System.out.println(key + " "+idx + " " + exists);
-
 		if(exists){
 			Entry temp = entries.remove(idx);
 			boolean blockUsed = false;
@@ -149,13 +133,12 @@ public class OrdIndex implements DBIndex {
 			temp.key = key;
 			temp.blocks = new ArrayList<>();
 			temp.blocks.add(b);
-//			System.out.println("adding temp: " + temp.toString() + "idx: " + idx);
-			if(idx == -1 && key > entries.get(entries.size()-1).key){entries.add(entries.size(), temp);}
+			if(size==0){entries.add(0, temp);}
+			else if(idx == -1 && key > entries.get(entries.size()-1).key){entries.add(entries.size(), temp);}
 			else if(idx == -1){entries.add(0, temp);}
-			else{entries.add(idx,temp);}
+			else{entries.add(idx+1,temp);}
 			size++;
 		}
-
 //		throw new UnsupportedOperationException();
 	}
 

@@ -28,7 +28,7 @@ class OrdIndexTest {
 		idx.insert(3, 1);
 		idx.insert(4, 2);
 
-		System.out.println(idx);
+//		System.out.println(idx);
 	}
 
 	@Test

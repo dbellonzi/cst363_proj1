@@ -330,7 +330,6 @@ public class HeapDB implements DB, Iterable<Record> {
 					}
 					// add records into "result'
 				}
-
 				return result;
 
 		// replace the following line with your return statement
@@ -422,7 +421,6 @@ public class HeapDB implements DB, Iterable<Record> {
 		// YOUR CODE HERE
 		// for each record in the DB, you will need to insert its
 		// index column value and the block number
-		// index column value and the block number
 		Record rec = schema.blankRecord();
 
 		// read and print the block bitmap
@@ -435,7 +433,7 @@ public class HeapDB implements DB, Iterable<Record> {
 					// record j is present; check its key value
 					int loc = recordLocation(recNum);
 					rec.deserialize(buffer.buffer, loc);
-					index.insert( ((IntField) rec.get(fieldNum)).getValue(), blockNum );
+					index.insert(((IntField) rec.get(fieldNum)).getValue(), blockNum );
 				}
 			}
 		}
