@@ -74,7 +74,6 @@ public class HashIndex implements DBIndex {
 	@Override
 	public void delete(int key, int blockNum) {
 		if(entries.containsKey(key)){
-
 			List<BlockCount> bl = entries.get(key);
 			Iterator<BlockCount> b = bl.iterator();
 			while(b.hasNext()) {
@@ -87,14 +86,6 @@ public class HashIndex implements DBIndex {
 					b.remove();
 				}
 			}
-
-//			List<BlockCount> bl = entries.get(key);
-//			for(BlockCount b: bl){
-//				if(b.blockNo == blockNum){
-//					b.count--;
-//					if(b.count==0) deleteKey = true;
-//				}
-//			}
 			if(bl.size()==0) entries.remove(key);
 		}
 	}
